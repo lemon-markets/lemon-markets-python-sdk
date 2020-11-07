@@ -32,7 +32,7 @@ my_token = Token("3c1c7343b6c8c241ebeedcb2a92095ba20dc692d")
 
 Your account is linked to your token, so if you want to get the account details, just do this:
 ```python
-my_account = token.account
+my_account = my_token.account
 ```
 
 ### Account
