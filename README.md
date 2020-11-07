@@ -153,7 +153,7 @@ We want to retrieve the OHLC (Open High Low Close) data for an instrument on a _
 ```python
 from lemon_markets.data.ohlc import M1
 
-m1_data = M1.list(instrument="DE0007100000")  # you can pass an Instrument instance in here as well
+m1_data = M1.list(instrument="DE0007100000",authorization_token=my_token)  # you can pass an Instrument instance in here as well
 
 ```
 
