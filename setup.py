@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="lemon-markets-sdk",
+    name="lemon_markets",
     version="0.0.1",
     author="Marcel Katenhusen",
     author_email="marcel@lemon.markets",

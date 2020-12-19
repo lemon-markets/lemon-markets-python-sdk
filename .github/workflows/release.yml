@@ -1,0 +1,44 @@
+name: release actions
+
+on:
+  release:
+    types: [ published ] 
+    
+jobs:
+  publish-binaries:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        
+    - name: Modify setup.py version
+      run: |
+        sed -i -E 's|version=\".*?\"|version="${{ github.event.release.tag_name }}"|g' setup.py
+        
+    - name: Build
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Upload release assets
+      uses: AButler/upload-release-assets@v2.0
+      with:
+        files: dist/*
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: ${{ github.event.release.tag_name }}
+
+    - name: Publish to test-pypi
+      run: |
+        twine upload dist/* --repository testpypi -u __token__ -p ${{ secrets.TEST_PYPI_PASSWD }} --non-interactive --disable-progress-bar -c "${{ github.event.release.body }}"
+        
+    - name: Publish to pypi
+      if: "!github.event.release.prerelease"
+      run: |
+        twine upload dist/* --repository pypi -u __token__ -p ${{ secrets.PYPI_PASSWD }} --non-interactive --disable-progress-bar -c "${{ github.event.release.body }}"

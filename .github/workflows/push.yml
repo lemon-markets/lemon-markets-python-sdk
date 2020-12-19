@@ -1,0 +1,63 @@
+name: push actions
+
+on:
+  workflow_dispatch:
+  push:
+    ignore-branches:
+      - gh-pages
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with: 
+        python-version: '3.x'
+    
+    - name: Running linter
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylama
+    
+    - name: Linting
+      run: |
+        pylama --skip docs/conf.py,setup.py
+
+  update-gh-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        git checkout -b gh-pages
+        THEME=$(grep -oP '(?<=html_theme = ").+?(?=")' docs/conf.py)
+        python3 -m pip install --upgrade pip
+        pip install sphinx $THEME
+        pip install -r requirements.txt
+    - name: Change conf.py version
+      run: |
+        sed -i -E 's|release = ".*?"|release = "${{ github.event.release.tag_name }}"|g' docs/conf.py
+    - name: Build using sphinx
+      env:
+        SPHINX_APIDOC_OPTIONS: members
+      run: |
+        sphinx-build -M html docs/ build/
+        find . -mindepth 1 ! -regex '^./build\(/.*\)?' ! -regex '^./.git\(/.*\)?' -delete
+        find build/html* -maxdepth 1 -mindepth 1 -not -name build -exec mv '{}' . \;
+        rm -rf build/
+        touch .nojekyll
+        git add -A
+        git config --global user.email "leonhard.masche@gmail.com"
+        git config --global user.name "leonhma"
+        git commit -m 'Updating page version (triggered by push)'
+        git push origin gh-pages --force

@@ -82,7 +82,7 @@ class Order(CreateMixin, UUIDAccountObjectMixin, AbstractApiObjectMixin, ListMix
     def destroy(self, raise_exception: bool = False) -> bool:
         try:
             self.check_instance()
-            request = ApiRequest(
+            ApiRequest.__init__(
                 endpoint="orders/{}/".format(self.uuid),
                 account=self.account,
                 method="DELETE"

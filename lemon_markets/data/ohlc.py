@@ -71,7 +71,7 @@ class M1(OHLCObject, AbstractDataMixin):
 class Trades(TradeObject, AbstractDataMixin):
 
     @classmethod
-    def _build_endpoint(cls, instrument: Union[str, "Instrument"] = None) -> str:
+    def _build_endpoint(cls, instrument: Union[str, "Instrument"]) -> str:
         endpoint = "data/instruments/{}/ticks/".format(str(instrument))
         return endpoint
 

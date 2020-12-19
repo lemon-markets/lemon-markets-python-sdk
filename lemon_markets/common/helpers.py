@@ -1,5 +1,4 @@
 import datetime
-from abc import ABC, abstractmethod
 
 from lemon_markets.common.errors import BaseError
 
