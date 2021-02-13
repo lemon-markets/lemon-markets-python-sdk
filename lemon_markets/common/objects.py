@@ -1,7 +1,7 @@
 import datetime
 from typing import get_type_hints, Any
 
-import pytz as pytz
+import pytz
 
 from lemon_markets.common.errors import RestApiError
 from lemon_markets.common.requests import ApiRequest
@@ -129,7 +129,7 @@ class ListMixin:
                 continue
 
             if type(value) == datetime.datetime and value:
-                params[param] = value.timestamp()
+                params[param] = int(value.timestamp())
                 continue
 
             if value:
